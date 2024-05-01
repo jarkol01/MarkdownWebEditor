@@ -2,10 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import App from '@/HomePage.vue'
 import ExamplePage from '@/ExamplePage.vue'
+import EditorPage from '@/EditorPage.vue'
 
 const routes = [
   { path: '/', component: App },
-  { path: '/example', component: ExamplePage }
+  { path: '/example', component: ExamplePage },
+  { path: '/editor', component: EditorPage }
 ]
 
 const router = createRouter({
