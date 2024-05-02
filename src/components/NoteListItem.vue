@@ -2,14 +2,27 @@
 import { useStore } from 'vuex'
 
 const store = useStore()
-const props = defineProps(['id', 'title'])
 
 const selectNote = () => {
   store.commit('setSelectedNoteId', props.id)
   console.log('Selected note:', store.getters.selectedNoteId)
 }
+
+const props = defineProps({
+  id: String,
+  title: String
+})
+
 </script>
 
 <template>
-  <li><a @click="selectNote">{{ props.title }}</a></li>
+  <li>
+    <RouterLink
+      :to="'/editor/' + props.id"
+      class="btn btn-ghost font-normal text-left block opacity-75 content-center"
+      @click="selectNote"
+    >
+      {{ props.title }}
+    </RouterLink>
+  </li>
 </template>
