@@ -7,6 +7,10 @@ import { useStore } from 'vuex'
 import db from '@/firebase.js'
 import { doc, getDoc } from "firebase/firestore";
 import NoteList from '@/components/NoteList.vue'
+import OCR from './components/OCR.vue'
+
+
+
 
 // Set default initial content
 const content = ref('# Edit me...')
@@ -68,8 +72,12 @@ watch(() => store.getters.selectedNoteId, fetchNote)
       <div class="h-full bg-base-300 px-4 overflow-auto">
         <div class="preview" v-html="preview"></div>
       </div>
+      
     </div>
   </div>
+  <div><a>TDSADASOL</a></div>
+  <div> <OCR /> </div>
+  
 </template>
 
 <style scoped>

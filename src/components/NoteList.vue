@@ -40,6 +40,7 @@ const filterNotes = debounce((e) => {
             clip-rule="evenodd" />
     </svg>
   </label>
+  
   <ul class="menu w-80 flex flex-col gap-2 mt-2">
     <NoteListItem v-for="note in filteredNotes" :key="note.id" :id="note.id" :title="note.title" :searchQuery />
   </ul>
