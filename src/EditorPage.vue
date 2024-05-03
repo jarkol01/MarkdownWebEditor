@@ -5,7 +5,7 @@ import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import db from '@/firebase.js'
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from 'firebase/firestore'
 import NoteList from '@/components/NoteList.vue'
 
 // Set default initial content
@@ -30,17 +30,17 @@ const noteId = route.params.noteId
 console.log(noteId)
 
 const store = useStore()
-const title = ref("")
+const title = ref('')
 
 // Fetch note data from Firestore
 const fetchNote = async () => {
-  const docRef = doc(db, "notes", store.getters.selectedNoteId);
-  const docSnap = await getDoc(docRef);
+  const docRef = doc(db, 'notes', store.getters.selectedNoteId)
+  const docSnap = await getDoc(docRef)
   if (docSnap.exists()) {
     title.value = docSnap.data().title
     content.value = docSnap.data().content
   } else {
-    console.log("No such document!");
+    console.log('No such document!')
   }
 }
 
@@ -52,22 +52,80 @@ if (noteId) {
 
 // Watch for changes in the selected note
 watch(() => store.getters.selectedNoteId, fetchNote)
+
+// Check if the page is viewed on a mobile device and adjust the layout accordingly
+const MOBILE_WINDOW_WIDtH_THRESHOLD = 1024
+let isMobile = ref(window.innerWidth < MOBILE_WINDOW_WIDtH_THRESHOLD)
+const mobileViewMode = ref<'list' | 'editor' | 'preview'>('list')
+window.addEventListener('resize', () => {
+  isMobile.value = window.innerWidth < MOBILE_WINDOW_WIDtH_THRESHOLD
+  console.log(isMobile.value, mobileViewMode.value)
+})
 </script>
 
 <template>
-  <div class="flex h-full overflow-auto">
-    <div class="py-1">
-      <NoteList />
+  <div class="h-svh flex flex-col">
+    <div class="navbar bg-base-100">
+      <div class="flex-1">
+        <a href="#" class="btn btn-ghost text-xl pointer-events-none hidden sm:flex">MDWE</a>
+        <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" />
+      </div>
+      <div class="flex-none gap-2">
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+            <div class="w-10 rounded-full">
+              <img alt="Profile icon" src="./assets/img/default-profile-icon.svg" />
+            </div>
+          </div>
+          <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+            <li><a>Profile</a></li>
+            <li><a>Settings</a></li>
+            <li><a>Logout</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="grow h-full grid grid-cols-2">
+    <div class="h-full overflow-auto grid grid-cols-5">
+      <div
+        class="py-1 col-span-5 lg:col-span-1"
+        v-if="!isMobile || mobileViewMode === 'list'"
+      >
+        <NoteList @select-note="mobileViewMode = 'editor'" />
+      </div>
+      <div class="grow h-full col-span-5 lg:col-span-4 grid lg:grid-cols-2">
       <textarea
-        class="textarea bg-base-200 rounded-none resize-none rounded-tl-2xl focus:outline-none focus:border-transparent"
+        class="textarea bg-base-200 rounded-none resize-none focus:outline-none focus:border-transparent"
+        :class="{ 'rounded-tl-2xl': !isMobile }"
         :value="content"
         @input="updatePreview"
+        v-if="!isMobile || mobileViewMode === 'editor'"
       ></textarea>
-      <div class="h-full bg-base-300 px-4 overflow-auto">
-        <div class="preview" v-html="preview"></div>
+        <div class="h-full bg-base-300 px-5 overflow-auto"
+             v-if="!isMobile || mobileViewMode === 'preview'"
+        >
+          <div class="preview" v-html="preview"></div>
+        </div>
       </div>
+    </div>
+    <div class="btm-nav sticky" v-if="isMobile">
+      <button
+        :class="{ active: mobileViewMode === 'list' }"
+        @click="mobileViewMode = 'list'"
+      >
+        List
+      </button>
+      <button
+        :class="{ active: mobileViewMode === 'editor' }"
+        @click="mobileViewMode = 'editor'"
+      >
+        Editor
+      </button>
+      <button
+        :class="{ active: mobileViewMode === 'preview' }"
+        @click="mobileViewMode = 'preview'"
+      >
+        Preview
+      </button>
     </div>
   </div>
 </template>
