@@ -67,7 +67,7 @@ window.addEventListener('resize', () => {
   <div class="h-svh flex flex-col">
     <div class="navbar bg-base-100">
       <div class="flex-1">
-        <a href="#" class="btn btn-ghost text-xl pointer-events-none hidden sm:flex">MDWE</a>
+        <img src="./assets/img/logo.svg" alt="Logo" class="w-8 mx-4" />
         <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" />
       </div>
       <div class="flex-none gap-2">
@@ -87,7 +87,7 @@ window.addEventListener('resize', () => {
     </div>
     <div class="h-full overflow-auto grid grid-cols-5">
       <div
-        class="py-1 col-span-5 lg:col-span-1"
+        class="py-2 col-span-5 lg:col-span-1"
         v-if="!isMobile || mobileViewMode === 'list'"
       >
         <NoteList @select-note="mobileViewMode = 'editor'" />
