@@ -1,18 +1,19 @@
 <script setup>
 import { useStore } from 'vuex'
 
-const store = useStore()
-
-const selectNote = () => {
-  store.commit('setSelectedNoteId', props.id)
-  console.log('Selected note:', store.getters.selectedNoteId)
-}
-
 const props = defineProps({
   id: String,
   title: String
 })
 
+const emit = defineEmits(['selectNote'])
+
+const store = useStore()
+
+const selectNote = () => {
+  store.commit('setSelectedNoteId', props.id)
+  emit('selectNote')
+}
 </script>
 
 <template>

@@ -5,6 +5,8 @@ import { computed, onMounted, ref } from 'vue'
 import NoteListItem from '@/components/NoteListItem.vue'
 import { debounce } from 'lodash-es'
 
+const emit = defineEmits(['select-note'])
+
 const notes = ref([])
 
 onMounted(async () => {
@@ -40,8 +42,7 @@ const filterNotes = debounce((e) => {
             clip-rule="evenodd" />
     </svg>
   </label>
-  
-  <ul class="menu w-80 flex flex-col gap-2 mt-2">
-    <NoteListItem v-for="note in filteredNotes" :key="note.id" :id="note.id" :title="note.title" :searchQuery />
+  <ul class="menu flex flex-col gap-2 mt-2">
+    <NoteListItem v-for="note in filteredNotes" :key="note.id" :id="note.id" :title="note.title" :search-query @select-note="emit('select-note')" />
   </ul>
 </template>
