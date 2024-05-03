@@ -1,0 +1,20 @@
+{
+  "name": "MDWE",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "",
+  "display": "standalone",
+  "background_color": "#1d232a",
+  "theme_color": "#1d232a"
+}

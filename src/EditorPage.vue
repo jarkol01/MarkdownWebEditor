@@ -31,7 +31,6 @@ const updatePreview = debounce((e) => {
 // Get noteId from the route params if present
 const route = useRoute()
 const noteId = route.params.noteId
-console.log(noteId)
 
 const store = useStore()
 const title = ref('')
@@ -44,7 +43,7 @@ const fetchNote = async () => {
     title.value = docSnap.data().title
     content.value = docSnap.data().content
   } else {
-    console.log('No such document!')
+    console.log('Document not found!')
   }
 }
 
@@ -63,7 +62,6 @@ let isMobile = ref(window.innerWidth < MOBILE_WINDOW_WIDtH_THRESHOLD)
 const mobileViewMode = ref<'list' | 'editor' | 'preview'>('list')
 window.addEventListener('resize', () => {
   isMobile.value = window.innerWidth < MOBILE_WINDOW_WIDtH_THRESHOLD
-  console.log(isMobile.value, mobileViewMode.value)
 })
 </script>
 
@@ -71,13 +69,13 @@ window.addEventListener('resize', () => {
   <div class="h-svh flex flex-col">
     <div class="navbar bg-base-100">
       <div class="flex-1">
-        <img src="./assets/img/logo.svg" alt="Logo" class="w-8 mx-4" />
+        <img src="../public/logo.svg" alt="Logo" class="w-8 mx-4" />
         <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" />
       </div>
       <div class="flex-none gap-2">
         <div class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-            <div class="w-10 rounded-full">
+            <div class="w-8 rounded-full">
               <img alt="Profile icon" src="./assets/img/default-profile-icon.svg" />
             </div>
           </div>
