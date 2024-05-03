@@ -72,7 +72,6 @@ window.addEventListener('resize', () => {
       </div>
       <div class="flex-none gap-2">
         <button class="btn" onclick="ocr_modal.showModal()">OCR</button>
-
         <div class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
             <div class="w-8 rounded-full">
@@ -132,11 +131,9 @@ window.addEventListener('resize', () => {
     </div>
   </div>
   <!--  <div> <OCR /> </div>-->
-  <dialog id="ocr_modal" class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box">
+
       <OCR />
-    </div>
-  </dialog>
+
 </template>
 
 <style scoped>
