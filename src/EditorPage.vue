@@ -7,9 +7,7 @@ import { useStore } from 'vuex'
 import db from '@/firebase.js'
 import { doc, getDoc } from 'firebase/firestore'
 import NoteList from '@/components/NoteList.vue'
-import OCR from './components/OCR.vue'
-
-
+import OCR from './components/OpticalCharacterRecognition.vue'
 
 
 // Set default initial content
@@ -73,6 +71,8 @@ window.addEventListener('resize', () => {
         <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" />
       </div>
       <div class="flex-none gap-2">
+        <button class="btn" onclick="ocr_modal.showModal()">OCR</button>
+
         <div class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
             <div class="w-8 rounded-full">
@@ -108,7 +108,7 @@ window.addEventListener('resize', () => {
           <div class="preview" v-html="preview"></div>
         </div>
       </div>
-      
+
     </div>
     <div class="btm-nav sticky" v-if="isMobile">
       <button
@@ -131,8 +131,12 @@ window.addEventListener('resize', () => {
       </button>
     </div>
   </div>
-  <div> <OCR /> </div>
-  
+  <!--  <div> <OCR /> </div>-->
+  <dialog id="ocr_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+      <OCR />
+    </div>
+  </dialog>
 </template>
 
 <style scoped>
