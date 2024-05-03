@@ -75,7 +75,6 @@ watch(() => store.getters.selectedNoteId, fetchNote)
       
     </div>
   </div>
-  <div><a>TDSADASOL</a></div>
   <div> <OCR /> </div>
   
 </template>
