@@ -130,10 +130,7 @@ window.addEventListener('resize', () => {
       </button>
     </div>
   </div>
-  <!--  <div> <OCR /> </div>-->
-
-      <OCR />
-
+  <OCR />
 </template>
 
 <style scoped>
