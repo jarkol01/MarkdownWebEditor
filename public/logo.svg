@@ -1,17 +1,17 @@
-<svg width="378" xmlns="http://www.w3.org/2000/svg" height="378" fill="none">
+<svg width="512" xmlns="http://www.w3.org/2000/svg" height="512" fill="none">
     <g mask="url(#b)" clip-path="url(#a)">
         <defs>
             <clipPath id="a" class="mask-clip-path">
-                <polyline points="0,0 378,0 378,378 0,378"/>
+                <polyline points="0,0 512,0 512,512 0,512"/>
             </clipPath>
             <filter id="c">
                 <feFlood flood-color="#fff" result="FloodResult"/>
                 <feComposite in="FloodResult" in2="SourceGraphic" operator="in" result="comp"/>
             </filter>
-            <mask width="378" maskUnits="userSpaceOnUse" height="378" class="mask-shape" x="0" id="b"
+            <mask width="512" maskUnits="userSpaceOnUse" height="512" class="mask-shape" x="0" id="b"
                   y="0">
                 <g filter="url(#c)">
-                    <rect rx="0" ry="0" width="378" height="378" style="fill: rgb(177, 178, 181); fill-opacity: 1;"
+                    <rect rx="0" ry="0" width="512" height="512" style="fill: rgb(177, 178, 181); fill-opacity: 1;"
                           class="fills"/>
                 </g>
             </mask>
@@ -21,10 +21,10 @@
                 <stop offset="0" stop-color="#4da4d6"/>
                 <stop offset="1" stop-color="#4eb1c8"/>
             </linearGradient>
-            <pattern patternUnits="userSpaceOnUse" x="100.777" y="67.777" width="250" height="250" id="e">
-                <rect width="250" height="250" style="fill: url(&quot;#d&quot;);"/>
+            <pattern patternUnits="userSpaceOnUse" x="121.502" y="91.803" width="338.624" height="338.624" id="e">
+                <rect width="338.624" height="338.624" style="fill: url(&quot;#d&quot;);"/>
             </pattern>
-            <filter id="f" x="-.46" y="-.46" width="1.72" height="1.72" filterUnits="objectBoundingBox"
+            <filter id="f" x="-.34" y="-.34" width="1.532" height="1.532" filterUnits="objectBoundingBox"
                     color-interpolation-filters="sRGB">
                 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
                 <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
@@ -36,19 +36,19 @@
                 <feBlend in="SourceGraphic" in2="filter_d1df2f5b-a5b8-8064-8004-4b3acb49bff8" result="shape"/>
             </filter>
         </defs>
-        <rect width="250" height="250" x="100.777" transform="rotate(-45 225.777 192.777)" ry="75" fill="url(#e)"
-              rx="75" filter="url(#f)" y="67.777" class="fills"/>
+        <rect width="338.624" height="338.624" x="121.502" transform="rotate(-45 290.814 261.115)" ry="75"
+              fill="url(#e)" rx="75" filter="url(#f)" y="91.803" class="fills"/>
         <defs>
             <linearGradient id="g" x1=".854" y1="-.208" x2=".146" y2="1.124">
                 <stop offset="0" stop-color="#49ffbc"/>
                 <stop offset="1" stop-color="#06f"/>
             </linearGradient>
-            <pattern patternUnits="userSpaceOnUse" x="185.98" y="103.5" width="179.594" height="178.985"
-                     patternTransform="scale(-1 1) rotate(45 0 -472.792)" id="h">
-                <rect width="179.594" height="178.985" style="fill: url(&quot;#g&quot;);"/>
+            <pattern patternUnits="userSpaceOnUse" x="236.909" y="140.19" width="243.26" height="242.434"
+                     patternTransform="rotate(-45 358.539 261.407)" id="h">
+                <rect width="243.26" height="242.434" style="fill: url(&quot;#g&quot;);"/>
             </pattern>
         </defs>
-        <path d="m284.858 75.081 64.662 64.663c29.27 29.269 29.27 76.796 0 106.066l-65.301 65.301c-17.107-6.009-33.163-15.847-46.831-29.515-48.783-48.783-48.783-127.994 0-176.777 13.838-13.838 30.125-23.75 47.47-29.738Z"
+        <path d="m370.84 101.698 106.384 106.385c29.27 29.269 29.27 76.796 0 106.066l-107.25 107.25c-23.171-8.139-44.919-21.465-63.432-39.978-66.076-66.076-66.076-173.367 0-239.444 18.743-18.743 40.803-32.17 64.298-40.279Z"
               fill="url(#h)" class="fills"/>
     </g>
 </svg>

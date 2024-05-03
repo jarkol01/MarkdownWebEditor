@@ -9,3 +9,15 @@ createApp(App)
   .use(router)
   .use(store)
   .mount('#app')
+
+
+// Register service worker for PWA support
+window.onload = () => {
+  'use strict'
+  if ('serviceWorker' in navigator) {
+    navigator
+      .serviceWorker
+      .register('../service-worker.js')
+      .then(() => console.log('Service worker registered'))
+  }
+}
