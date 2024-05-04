@@ -8,6 +8,7 @@ import db from '@/firebase.js'
 import { doc, getDoc } from 'firebase/firestore'
 import NoteList from '@/components/NoteList.vue'
 import OCR from './components/OpticalCharacterRecognition.vue'
+import AudioRecorder from './components/AudioRecorder.vue'
 
 
 // Set default initial content
@@ -64,6 +65,8 @@ window.addEventListener('resize', () => {
 </script>
 
 <template>
+  
+  
   <div class="h-svh flex flex-col">
     <div class="navbar bg-base-100">
       <div class="flex-1">
@@ -82,6 +85,9 @@ window.addEventListener('resize', () => {
           <ul tabindex="0" class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
             <li>
               <button onclick="ocr_modal.showModal()">OCR</button>
+            </li>
+            <li>
+              <button onclick="recorder_modal.showModal()">Recorder</button>
             </li>
             <!-- TODO: Other extra functionalities may be launched from here -->
           </ul>
@@ -144,6 +150,10 @@ window.addEventListener('resize', () => {
     </div>
   </div>
   <OCR />
+  <AudioRecorder/>
+
+  
+ 
 </template>
 
 <style scoped>
