@@ -8,6 +8,7 @@ import { useStore } from 'vuex'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import NoteList from '@/components/NoteList/NoteList.vue'
 import OCR from './components/OpticalCharacterRecognitionModal.vue'
+import AudioRecorder from '@/components/AudioRecorder.vue'
 import ProfileInfo from '@/components/Auth/ProfileInfo.vue'
 import { auth } from '@/firebase.js'
 import AuthDropdown from '@/components/Auth/AuthDropdown.vue'
@@ -110,6 +111,9 @@ window.addEventListener('resize', () => {
             <li>
               <button onclick="ocr_modal.showModal()">OCR</button>
             </li>
+            <li>
+              <button onclick="recorder_modal.showModal()">Recorder</button>
+            </li>
             <!-- TODO: Other extra functionalities may be launched from here -->
           </ul>
         </div>
@@ -164,6 +168,7 @@ window.addEventListener('resize', () => {
     </div>
   </div>
   <OCR />
+  <AudioRecorder/>
 </template>
 
 <style scoped>
