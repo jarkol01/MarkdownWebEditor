@@ -39,6 +39,7 @@ const startRecording = async () => {
     emit('recordingStarted')
   } catch (error) {
     console.error('Error accessing microphone:', error)
+    showToast('Microphone is inaccessible', 'alert-error')
   }
 }
 
