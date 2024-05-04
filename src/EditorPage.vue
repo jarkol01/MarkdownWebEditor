@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import NoteList from '@/components/NoteList/NoteList.vue'
-import OCR from './components/OpticalCharacterRecognition.vue'
+import OCR from './components/OpticalCharacterRecognitionModal.vue'
 import ProfileInfo from '@/components/Auth/ProfileInfo.vue'
 import { auth } from '@/firebase.js'
 import AuthDropdown from '@/components/Auth/AuthDropdown.vue'
@@ -94,7 +94,7 @@ window.addEventListener('resize', () => {
   <div class="h-svh flex flex-col">
     <div class="navbar bg-base-100">
       <div class="flex-1">
-        <img src="../public/logo.svg" alt="Logo" class="w-8 mx-4" />
+        <img src="/logo.svg" alt="Logo" class="w-8 mx-4" />
         <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" @input="(e) => {updateTitle(e); saveNote()}" />
       </div>
       <div class="flex-none gap-2">
