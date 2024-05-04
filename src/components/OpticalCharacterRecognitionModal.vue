@@ -6,23 +6,42 @@ const ocrState = ref('awaiting-camera-start')
 const cameraViewfinder = ref(null)
 const resultText = ref('')
 const imageSrc = ref(null)
-const toastMessage = ref('')
 let currentStream = null
 
-const startCamera = async () => {
-  if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-    console.log('Camera access is supported in this browser.')
-  } else {
-    console.error('Camera access is not supported in this browser.')
-  }
+const toast = ref({
+  message: '',
+  type: ''
+})
 
+const showToast = (message, type) => {
+  if (toast.value.message) {
+    return
+  }
+  toast.value = {
+    message,
+    type
+  }
+  setTimeout(() => {
+    toast.value = {
+      message: '',
+      type: ''
+    }
+  }, 3000)
+}
+
+const startCamera = async () => {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true })
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: 'environment'
+      }
+    })
     cameraViewfinder.value.srcObject = stream
     currentStream = stream
     ocrState.value = 'awaiting-capture'
   } catch (error) {
     console.error('Error accessing camera:', error)
+    showToast('Camera is inaccessible', 'alert-error')
   }
 }
 
@@ -72,10 +91,7 @@ const processExistingImage = (file) => {
 
 const copyResults = () => {
   navigator.clipboard.writeText(resultText.value)
-  toastMessage.value = 'Copied to clipboard!'
-  setTimeout(() => {
-    toastMessage.value = ''
-  }, 3000)
+  showToast('Copied to clipboard', 'alert-success')
 }
 </script>
 
@@ -146,9 +162,9 @@ const copyResults = () => {
         </div>
       </div>
     </div>
-    <div class="toast" v-if="toastMessage">
-      <div class="alert alert-info">
-        <span>{{ toastMessage }}</span>
+    <div class="toast" v-if="toast.message">
+      <div class="alert" :class="`${toast.type}`">
+        <span>{{ toast.message }}</span>
       </div>
     </div>
   </dialog>
