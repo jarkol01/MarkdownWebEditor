@@ -4,6 +4,7 @@ import AlertToast from '@/components/AlertToast.vue'
 import { addDoc, collection, deleteDoc, getDocs, getFirestore, query, where } from 'firebase/firestore'
 import { deleteObject, getDownloadURL, getStorage, ref as refStorage, uploadBytes } from 'firebase/storage'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { ArrowDownTrayIcon, TrashIcon } from '@heroicons/vue/24/outline/index.js'
 
 const storage = getStorage()
 const storageReds = []
@@ -124,7 +125,7 @@ const removeRecording = async recording => {
   console.log(recording.name)
   const storageRef = refStorage(storage, recording.name)
   console.log('Issuing delete command')
-  ;await (async () => {
+  await (async () => {
     await deleteObject(storageRef)
   })()
 
@@ -184,12 +185,20 @@ const removeRecording = async recording => {
           >
             <div class="flex gap-3 justify-between items-center mb-3">
               <p>{{ audioRecording.name }}</p>
-              <button
-                class="btn btn-ghost btn-xs"
-                @click="removeRecording(audioRecording)"
-              >
-                Remove
-              </button>
+              <div class="flex gap-2">
+                <a
+                  class="btn btn-ghost btn-xs px-1"
+                  :href="audioRecording.url"
+                >
+                  <ArrowDownTrayIcon class="w-4 h-4" />
+                </a>
+                <button
+                  class="btn btn-ghost btn-xs px-1"
+                  @click="removeRecording(audioRecording)"
+                >
+                  <TrashIcon class="w-4 h-4" />
+                </button>
+              </div>
             </div>
             <audio class="w-full rounded-lg" :src="audioRecording.url" controls></audio>
           </li>
