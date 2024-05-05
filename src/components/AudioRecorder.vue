@@ -35,6 +35,9 @@ const startRecording = async () => {
     mediaRecorder = new MediaRecorder(currentStream)
     mediaRecorder.ondataavailable = e => chunks.value.push(e.data)
     mediaRecorder.start()
+
+    navigator.vibrate(10)
+
     showToast('Recording started', 'alert-success')
     emit('recordingStarted')
   } catch (error) {
@@ -53,12 +56,20 @@ const stopRecording = async () => {
   const name = prompt('Enter a name for your sound clip?', `Audio recording (${new Date().toLocaleString()})`)
   const blob = new Blob(chunks.value, { type: mediaRecorder.mimeType })
   const url = window.URL.createObjectURL(blob)
-  audioRecordings.value.push({ name, blob, url })
+  audioRecordings.value.push({ name: name || 'Untitled', blob, url })
 
   chunks.value = []
 
-  showToast('Recording stopped', 'alert-success')
+  navigator.vibrate(10)
+
+  showToast('Recording stopped', 'alert-info')
   emit('recordingStopped')
+}
+
+const removeRecording = recording => {
+  audioRecordings.value = audioRecordings.value.filter(r => r !== recording)
+  navigator.vibrate(10)
+  showToast('Recording removed', 'alert-warning')
 }
 </script>
 
@@ -106,7 +117,7 @@ const stopRecording = async () => {
               <p>{{ audioRecording.name }}</p>
               <button
                 class="btn btn-ghost btn-xs"
-                @click="audioRecordings = audioRecordings.filter(recording => recording !== audioRecording)"
+                @click="removeRecording(audioRecording)"
               >
                 Remove
               </button>
