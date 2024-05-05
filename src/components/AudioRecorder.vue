@@ -33,7 +33,12 @@ const startRecording = async () => {
   try {
     currentStream = await navigator.mediaDevices.getUserMedia({ audio: true })
     mediaRecorder = new MediaRecorder(currentStream)
-    mediaRecorder.ondataavailable = e => chunks.value.push(e.data)
+    mediaRecorder.ondataavailable = e => {
+      const DEFAULT_RECORDING_NAME = `Recording (${new Date().toLocaleString()})`
+      const name = prompt('Enter a name for your sound clip', DEFAULT_RECORDING_NAME)
+      const file = new File([e.data], `recording_${audioRecordings.value.length + 1}.${mediaRecorder.mimeType.split('/')[1]}`, { type: mediaRecorder.mimeType })
+      audioRecordings.value.push({ name: name || DEFAULT_RECORDING_NAME, file, url: URL.createObjectURL(file) })
+    }
     mediaRecorder.start()
 
     navigator.vibrate(10)
@@ -52,11 +57,6 @@ const stopRecording = async () => {
     currentStream.getTracks().forEach(track => track.stop())
     currentStream = null
   }
-
-  const name = prompt('Enter a name for your sound clip?', `Audio recording (${new Date().toLocaleString()})`)
-  const blob = new Blob(chunks.value, { type: mediaRecorder.mimeType })
-  const url = window.URL.createObjectURL(blob)
-  audioRecordings.value.push({ name: name || 'Untitled', blob, url })
 
   chunks.value = []
 
