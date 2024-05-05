@@ -1,19 +1,42 @@
 <script setup>
 import { ref } from 'vue'
 import AlertToast from '@/components/AlertToast.vue'
+import { getFirestore, collection, addDoc,getDocs,query,where } from "firebase/firestore";
 import {getStorage,getDownloadURL,ref as refStorage,uploadBytes,deleteObject} from "firebase/storage";
+import { getAuth } from 'firebase/auth';
 const storage = getStorage();
 const storageReds=[];
-const previous_Urls = [
+const db = getFirestore();
+const auth =  getAuth();
+
+let userId = null;
+if (auth.currentUser) {
+  userId =  auth.currentUser.uid;
+}
+
+
+/*const addData = async () => {
  
-    
-  { url: "https://firebasestorage.googleapis.com/v0/b/markdownwebeditor.appspot.com/o/test_3?alt=media&token=3b3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b", name: "test_3" },
-]
+console.log("test")
+  // Add a new document with a generated id.
+  const docRef = await addDoc(collection(db, "Recordings"), {
+    auth:  userId,
+    url: "https://firebasestorage.googleapis.com/v0/b/markdownwebeditor.appspot.com/o/test_3?alt=media&token=3b3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b",
+    recordingName: "test_3"
+  });
+
+  console.log("Document written with ID: ", docRef.id);
+};
+*/
+
 const loadRecordings = async () => {
-  previous_Urls.forEach((item) => {
-    const audio = new Audio(item.url);
-    console.log(item.name)
-    audioRecordings.value.push({ name: item.name , audio, url:item.url })
+  console.log("user id loading "+ userId)
+  const querySnapshot = await getDocs(query(collection(db, 'notes'), where('auth', '==', userId)))
+    querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    const audio = new Audio(data.url);
+  
+    audioRecordings.value.push({ name: data.recordingName, audio, url: data.url });
   });
 }
 const emit = defineEmits(['recordingStarted', 'recordingStopped'])
@@ -58,8 +81,15 @@ const startRecording = async () => {
   await uploadBytes(storageRef, file).then(async () => {
     const url = await getDownloadURL(storageRef);
     console.log('Download URL:', url);
-    previous_Urls.push({url: url, name: name })
-    console.log(previous_Urls)
+   // previous_Urls.push({url: url, name: name })
+    
+    const docRef = await addDoc(collection(db, "Recordings"), {
+    auth:  userId,
+    url: url,
+    recordingName: name
+  });
+  console.log(docRef)
+
   })
 })();
 //I love javascript syntax so much
@@ -86,12 +116,8 @@ const startRecording = async () => {
  
 }
 const Download = async() =>{
-  let lastElement = storageReds[storageReds.length - 1];
-    
-    const url = await getDownloadURL(lastElement);
-    console.log('Download URL:', url);
-    return url;
-  };
+ console.log("user id button : "+userId)
+  }
 
 const stopRecording = async () => {
   await mediaRecorder.stop()
@@ -124,9 +150,11 @@ loadRecordings()
 </script>
 
 <template>
+
   <dialog id="recorder_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
       <button @click="Download" class="btn btn-primary">Download</button>
+      <button @click="addData" class="btn btn-primary">Add to Database</button>
       <p class="text-xl font-bold mb-6 text-center">Audio recorder</p>
       <p class="mb-6">
         Here you can record audio clips, which will be later accessible below. Click the start button to begin.
