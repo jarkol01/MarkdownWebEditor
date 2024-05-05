@@ -1,8 +1,23 @@
 <script setup>
 import { ref } from 'vue'
 import AlertToast from '@/components/AlertToast.vue'
-
+import {getStorage,getDownloadURL,ref as refStorage,uploadBytes } from "firebase/storage";
+const storage = getStorage();
+const storageReds=[];
+const previous_Urls = [
+  { url: "https://firebasestorage.googleapis.com/v0/b/markdownwebeditor.appspot.com/o/test_1?alt=media&token=55cc01d5-8f86-46ee-97ed-fcd9571fd4dc", name: "Test 1" },
+  { url: "https://firebasestorage.googleapis.com/v0/b/markdownwebeditor.appspot.com/o/test_2?alt=media&token=e67420be-0e01-4a2a-b7d7-29769ccc6691", name: "Test 2" },
+  { url: "https://firebasestorage.googleapis.com/v0/b/markdownwebeditor.appspot.com/o/test_3?alt=media&token=3b3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b", name: "Test 3" }
+]
+const loadRecordings = async () => {
+  previous_Urls.forEach((item) => {
+    const audio = new Audio(item.url);
+    console.log(item.name)
+    audioRecordings.value.push({ name: item.name , audio, url:item.url })
+  });
+}
 const emit = defineEmits(['recordingStarted', 'recordingStopped'])
+
 
 const toast = ref({
   message: '',
@@ -36,7 +51,15 @@ const startRecording = async () => {
     mediaRecorder.ondataavailable = e => {
       const DEFAULT_RECORDING_NAME = `Recording (${new Date().toLocaleString()})`
       const name = prompt('Enter a name for your sound clip', DEFAULT_RECORDING_NAME)
-      const file = new File([e.data], `recording_${audioRecordings.value.length + 1}.${mediaRecorder.mimeType.split('/')[1]}`, { type: mediaRecorder.mimeType })
+      const file = new File([e.data], `${name}_${audioRecordings.value.length + 1}.${mediaRecorder.mimeType.split('/')[1]}`, { type: mediaRecorder.mimeType })
+
+      const storageRef = refStorage(storage,name);
+      
+      uploadBytes(storageRef, file);
+      storageReds.push(storageRef)
+ 
+      
+      
       audioRecordings.value.push({ name: name || DEFAULT_RECORDING_NAME, file, url: URL.createObjectURL(file) })
     }
     mediaRecorder.start()
@@ -49,8 +72,14 @@ const startRecording = async () => {
     console.error('Error accessing microphone:', error)
     showToast('Microphone is inaccessible', 'alert-error')
   }
+ 
 }
-
+const Download =() =>{
+  storageReds.forEach(async (ref) => {
+    const url = await getDownloadURL(ref);
+    console.log('Download URL:', url);
+  });
+}
 const stopRecording = async () => {
   await mediaRecorder.stop()
   if (currentStream) {
@@ -71,11 +100,13 @@ const removeRecording = recording => {
   navigator.vibrate(10)
   showToast('Recording removed', 'alert-warning')
 }
+loadRecordings()
 </script>
 
 <template>
   <dialog id="recorder_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
+      <button @click="Download" class="btn btn-primary">Download</button>
       <p class="text-xl font-bold mb-6 text-center">Audio recorder</p>
       <p class="mb-6">
         Here you can record audio clips, which will be later accessible below. Click the start button to begin.
