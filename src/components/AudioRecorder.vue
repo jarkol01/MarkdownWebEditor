@@ -170,7 +170,6 @@ const removeRecording = async recording => {
   navigator.vibrate(10)
   showToast('Recording removed', 'alert-warning')
 }
-loadRecordings()
 </script>
 
 <template>

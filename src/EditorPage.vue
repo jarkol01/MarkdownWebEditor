@@ -12,6 +12,7 @@ import OCR from './components/OpticalCharacterRecognitionModal.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import ProfileInfo from '@/components/auth/ProfileInfo.vue'
 import AuthDropdown from '@/components/auth/AuthModal.vue'
+import fileGeolocation from './components/fileGeolocation.vue'
 
 
 
@@ -134,6 +135,9 @@ const recordingStopped = () => isRecording.value = false
             <li>
               <button onclick="recorder_modal.showModal()">Recorder</button>
             </li>
+            <li>
+              <button onclick="geolocation_modal.showModal()">Geolocation</button>
+              </li>
           </ul>
         </div>
         <ProfileInfo v-if="isUserLoggedIn" />
@@ -188,6 +192,7 @@ const recordingStopped = () => isRecording.value = false
   </div>
   <OCR />
   <AudioRecorder @recording-started="recordingStarted" @recording-stopped="recordingStopped" />
+  <fileGeolocation />
 </template>
 
 <style scoped>
