@@ -4,14 +4,15 @@ import { auth, db } from '@/firebase.js'
 import { collection, addDoc } from 'firebase/firestore'
 import { useStore } from 'vuex'
 import router from '@/router.js'
-const emit = defineEmits(['selectNote'])
+const emit = defineEmits(['selectNote', 'creating'])
 
 const store = useStore()
 
 const createNewNote = async () => {
+  emit('creating')
   const docRef = await addDoc(collection(db, 'notes'), {
-    title: 'New Note',
-    content: '# My New Note',
+    title: 'New note',
+    content: '# My new note',
     user: auth.currentUser.uid
   })
   console.log("Document written with ID: ", );
