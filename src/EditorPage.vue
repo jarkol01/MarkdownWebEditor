@@ -29,6 +29,10 @@ const updatePreview = debounce((e) => {
   content.value = e.target.value
 }, 50)
 
+const updateTitle = debounce((e) => {
+  title.value = e.target.value
+}, 50)
+
 // Get noteId from the route params if present
 const route = useRoute()
 const noteId = route.params.noteId
@@ -60,10 +64,11 @@ const performSaveNote = async () => {
   await setDoc(docRef, {
     title: title.value,
     content: content.value
-  })
+  }, { merge: true })
   console.log("Note saved!")
 }
 const saveNote = debounce(() => {
+  console.log(title.value, content.value)
   performSaveNote()
 }, 3000)
 
@@ -90,7 +95,7 @@ window.addEventListener('resize', () => {
     <div class="navbar bg-base-100">
       <div class="flex-1">
         <img src="../public/logo.svg" alt="Logo" class="w-8 mx-4" />
-        <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" />
+        <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" @input="(e) => {updateTitle(e); saveNote()}" />
       </div>
       <div class="flex-none gap-2">
         <div class="dropdown dropdown-end">
