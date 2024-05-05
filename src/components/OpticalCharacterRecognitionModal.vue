@@ -2,12 +2,59 @@
 import { ref } from 'vue'
 import { createWorker } from 'tesseract.js'
 import AlertToast from '@/components/AlertToast.vue'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { addDoc, collection,doc,setDoc,getDoc,query,where,getDocs } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
 
 const ocrState = ref('awaiting-camera-start')
 const cameraViewfinder = ref(null)
 const resultText = ref('')
 const imageSrc = ref(null)
+const auth =  getAuth();
+const db= getFirestore();
+let userId = null
+
 let currentStream = null
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in.
+    userId = user.uid
+  } else {
+    // User is signed out.
+    console.log('User is not signed in.');
+  }
+});
+
+const addData = async () => {
+ 
+console.log("test")
+  // Add a new document with a generated id.
+  const docRef = await addDoc(collection(db, "OCR_Statistics"), {
+    user:  userId,
+    timesUsed: 1,
+    
+  });
+  
+  console.log("Document written with ID: ", docRef.id);
+  const updatedDocSnap = await getDoc(docRef);
+   console.log(updatedDocSnap.data());
+};
+const OCR_Used = async () => {
+  const q = query(collection(db, "OCR_Statistics"), where("user", "==", userId));
+  const querySnapshot = await getDocs(q);
+  console.log(userId)
+  
+  if (!querySnapshot.empty) {
+    const docRef = doc(db, "OCR_Statistics", querySnapshot.docs[0].id);
+    const newCount = querySnapshot.docs[0].data().timesUsed + 1;
+    await setDoc(docRef, { timesUsed: newCount }, { merge: true });
+
+    const updatedDocSnap = await getDoc(docRef);
+    console.log(updatedDocSnap.data());
+  } else {
+    addData()
+  }
+};
 
 const toast = ref({
   message: '',
@@ -76,6 +123,7 @@ const performOCR = async (file) => {
   resultText.value = text
   await worker.terminate()
   ocrState.value = 'processing-complete'
+  OCR_Used()
 }
 
 const retry = () => {
