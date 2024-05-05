@@ -2,13 +2,19 @@
   "name": "MDWE",
   "icons": [
     {
-      "src": "logo.svg",
+      "src": "/logo.svg",
       "type": "image/svg+xml",
       "sizes": "any",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "logo.png",
+      "src": "/logo_maskable.png",
+      "type": "image/png",
+      "sizes": "any",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }
