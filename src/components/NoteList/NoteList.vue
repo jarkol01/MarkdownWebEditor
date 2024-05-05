@@ -1,6 +1,6 @@
 <script setup>
 import { collection, query, where, getDocs } from 'firebase/firestore'
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import NoteListItem from '@/components/NoteList/NoteListItem.vue'
 import { debounce } from 'lodash-es'
 import { auth, db } from '@/firebase.js'

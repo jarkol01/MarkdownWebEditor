@@ -1,8 +1,8 @@
 <script setup>
   import { ref, watch } from 'vue'
   import { useStore } from 'vuex'
-  import db from '@/firebase.js'
   import { doc, getDoc } from "firebase/firestore";
+  import { db } from '@/firebase.js'
 
   const store = useStore()
   const title = ref("")

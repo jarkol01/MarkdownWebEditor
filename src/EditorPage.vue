@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { marked } from 'marked'
 import { debounce } from 'lodash-es'
+import { db } from '@/firebase.js'
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
-import db from '@/firebase.js'
-import { doc, getDoc } from 'firebase/firestore'
-import NoteList from '@/components/NoteList.vue'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import NoteList from '@/components/NoteList/NoteList.vue'
 import OCR from './components/OpticalCharacterRecognition.vue'
+import ProfileInfo from '@/components/Auth/ProfileInfo.vue'
+import { auth } from '@/firebase.js'
+import AuthDropdown from '@/components/Auth/AuthDropdown.vue'
 
 
 // Set default initial content
@@ -33,6 +36,12 @@ const noteId = route.params.noteId
 const store = useStore()
 const title = ref('')
 
+const isUserLoggedIn = ref(Boolean(auth.currentUser))
+auth.onAuthStateChanged((newUser) => {
+  isUserLoggedIn.value = Boolean(newUser)
+})
+
+
 // Fetch note data from Firestore
 const fetchNote = async () => {
   const docRef = doc(db, 'notes', store.getters.selectedNoteId)
@@ -44,6 +53,19 @@ const fetchNote = async () => {
     console.log('Document not found!')
   }
 }
+
+const performSaveNote = async () => {
+  console.log("Saving note...")
+  const docRef = doc(db, 'notes', store.getters.selectedNoteId)
+  await setDoc(docRef, {
+    title: title.value,
+    content: content.value
+  })
+  console.log("Note saved!")
+}
+const saveNote = debounce(() => {
+  performSaveNote()
+}, 3000)
 
 // If noteId is present, set it as the selected note
 if (noteId) {
@@ -86,18 +108,8 @@ window.addEventListener('resize', () => {
             <!-- TODO: Other extra functionalities may be launched from here -->
           </ul>
         </div>
-        <div class="dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-            <div class="w-8 rounded-full">
-              <img alt="Profile icon" src="./assets/img/default-profile-icon.svg" />
-            </div>
-          </div>
-          <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu dropdown-content bg-base-100 rounded-box w-52">
-            <li><a>Profile</a></li>
-            <li><a>Settings</a></li>
-            <li><a>Logout</a></li>
-          </ul>
-        </div>
+        <ProfileInfo v-if="isUserLoggedIn"/>
+        <AuthDropdown v-else/>
       </div>
     </div>
     <div class="h-full overflow-auto grid grid-cols-5">
@@ -107,12 +119,15 @@ window.addEventListener('resize', () => {
       >
         <NoteList @select-note="mobileViewMode = 'editor'" />
       </div>
-      <div class="grow h-full col-span-5 lg:col-span-4 grid lg:grid-cols-2">
+      <div
+        class="grow h-full col-span-5 lg:col-span-4 grid lg:grid-cols-2"
+        v-if="!isMobile || mobileViewMode !== 'list'"
+      >
       <textarea
         class="textarea bg-base-200 rounded-none resize-none focus:outline-none focus:border-transparent"
         :class="{ 'rounded-tl-2xl': !isMobile }"
         :value="content"
-        @input="updatePreview"
+        @input="(e) => {updatePreview(e); saveNote()}"
         v-if="!isMobile || mobileViewMode === 'editor'"
       ></textarea>
         <div class="h-full bg-base-300 px-5 overflow-auto"
