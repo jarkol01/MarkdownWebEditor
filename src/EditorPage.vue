@@ -12,7 +12,7 @@ import OCR from './components/OpticalCharacterRecognitionModal.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import ProfileInfo from '@/components/auth/ProfileInfo.vue'
 import AuthDropdown from '@/components/auth/AuthModal.vue'
-import fileGeolocation from './components/fileGeolocation.vue'
+import fileGeolocation from './components/GeolocationModal.vue'
 
 
 
