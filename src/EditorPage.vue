@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { marked } from 'marked'
 import { debounce } from 'lodash-es'
+
 import { db } from '@/firebase.js'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -12,6 +13,7 @@ import AudioRecorder from '@/components/AudioRecorder.vue'
 import ProfileInfo from '@/components/Auth/ProfileInfo.vue'
 import { auth } from '@/firebase.js'
 import AuthDropdown from '@/components/Auth/AuthDropdown.vue'
+
 
 
 // Set default initial content
@@ -104,7 +106,9 @@ const recordingStopped = () => isRecording.value = false
     <div class="navbar bg-base-100">
       <div class="flex-1">
         <img src="/logo.svg" alt="Logo" class="w-8 mx-4" />
+
         <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" @input="(e) => {updateTitle(e); saveNote()}" />
+
       </div>
       <div class="flex-none gap-2">
         <div class="relative flex h-3 w-3" v-if="isRecording">
