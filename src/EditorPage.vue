@@ -2,19 +2,16 @@
 import { marked } from 'marked'
 import { debounce } from 'lodash-es'
 
-import { db } from '@/firebase.js'
+import { auth, db } from '@/firebase.js'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import NoteList from '@/components/NoteList/NoteList.vue'
+import NoteList from '@/components/note-list/NoteList.vue'
 import OCR from './components/OpticalCharacterRecognitionModal.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
-import ProfileInfo from '@/components/Auth/ProfileInfo.vue'
-import { auth } from '@/firebase.js'
-import AuthDropdown from '@/components/Auth/AuthDropdown.vue'
-
-
+import ProfileInfo from '@/components/auth/ProfileInfo.vue'
+import AuthDropdown from '@/components/auth/AuthModal.vue'
 
 // Set default initial content
 const content = ref('# Edit me...')
@@ -48,7 +45,6 @@ auth.onAuthStateChanged((newUser) => {
   isUserLoggedIn.value = Boolean(newUser)
 })
 
-
 // Fetch note data from Firestore
 const fetchNote = async () => {
   const docRef = doc(db, 'notes', store.getters.selectedNoteId)
@@ -62,13 +58,13 @@ const fetchNote = async () => {
 }
 
 const performSaveNote = async () => {
-  console.log("Saving note...")
+  console.log('Saving note...')
   const docRef = doc(db, 'notes', store.getters.selectedNoteId)
   await setDoc(docRef, {
     title: title.value,
     content: content.value
   }, { merge: true })
-  console.log("Note saved!")
+  console.log('Note saved!')
 }
 const saveNote = debounce(() => {
   console.log(title.value, content.value)
@@ -106,9 +102,13 @@ const recordingStopped = () => isRecording.value = false
     <div class="navbar bg-base-100">
       <div class="flex-1">
         <img src="/logo.svg" alt="Logo" class="w-8 mx-4" />
-
-        <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" @input="(e) => {updateTitle(e); saveNote()}" />
-
+        <input
+          type="text"
+          placeholder="Note title"
+          class="input w-full max-w-xs"
+          :value="title"
+          @input="(e) => {updateTitle(e); saveNote()}"
+        />
       </div>
       <div class="flex-none gap-2">
         <div class="relative flex h-3 w-3" v-if="isRecording">
@@ -130,11 +130,10 @@ const recordingStopped = () => isRecording.value = false
             <li>
               <button onclick="recorder_modal.showModal()">Recorder</button>
             </li>
-            <!-- TODO: Other extra functionalities may be launched from here -->
           </ul>
         </div>
-        <ProfileInfo v-if="isUserLoggedIn"/>
-        <AuthDropdown v-else/>
+        <ProfileInfo v-if="isUserLoggedIn" />
+        <AuthDropdown v-else />
       </div>
     </div>
     <div class="h-full overflow-auto grid grid-cols-5">
