@@ -14,12 +14,12 @@ const closeModal = () => loginModal.value.close()
     <div class="modal-box">
       <p class="text-xl font-bold mb-6 text-center">Log in</p>
       <div class="flex flex-col w-full border-opacity-50">
-        <div class="grid sm:grid-cols-2 gap-6">
+        <div class="flex flex-col sm:grid sm:grid-cols-2 gap-6">
           <SignInWithGoogle />
           <SignInWithFacebook />
           <RouterLink
             :to="'/register/'"
-            class="btn btn-ghost border-base-content/25 hover:border-base-content"
+            class="btn btn-ghost border-base-content/25 hover:border-base-content col-span-2"
           >
             Sign up with email
           </RouterLink>
@@ -29,7 +29,6 @@ const closeModal = () => loginModal.value.close()
       </div>
       <div class="modal-action">
         <form method="dialog" class="w-full">
-          <!-- if there is a button in form, it will close the modal -->
           <button class="btn w-full">Close</button>
         </form>
       </div>
