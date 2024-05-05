@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import AlertToast from '@/components/AlertToast.vue'
-import { getFirestore, collection, addDoc,getDocs,query,where } from "firebase/firestore";
+import { getFirestore, collection, addDoc,getDocs,query,where, deleteDoc } from "firebase/firestore";
 import {getStorage,getDownloadURL,ref as refStorage,uploadBytes,deleteObject} from "firebase/storage";
-import { getAuth } from 'firebase/auth';
+import { getAuth,onAuthStateChanged } from 'firebase/auth';
 const storage = getStorage();
 const storageReds=[];
 const db = getFirestore();
@@ -13,6 +13,16 @@ let userId = null;
 if (auth.currentUser) {
   userId =  auth.currentUser.uid;
 }
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in.
+    userId = user.uid;
+    loadRecordings();
+  } else {
+    // User is signed out.
+    console.log('User is not signed in.');
+  }
+});
 
 
 /*const addData = async () => {
@@ -30,10 +40,16 @@ console.log("test")
 */
 
 const loadRecordings = async () => {
+  if (!auth.currentUser) {
+    console.error('User not authenticated');
+    return;
+  }
   console.log("user id loading "+ userId)
-  const querySnapshot = await getDocs(query(collection(db, 'notes'), where('auth', '==', userId)))
+  const querySnapshot = await getDocs(query(collection(db, 'Recordings'), where('auth', '==', userId)))
     querySnapshot.forEach((doc) => {
+   
     const data = doc.data();
+    console.log(data)
     const audio = new Audio(data.url);
   
     audioRecordings.value.push({ name: data.recordingName, audio, url: data.url });
@@ -84,7 +100,7 @@ const startRecording = async () => {
    // previous_Urls.push({url: url, name: name })
     
     const docRef = await addDoc(collection(db, "Recordings"), {
-    auth:  userId,
+    auth:  auth.currentUser.uid,
     url: url,
     recordingName: name
   });
@@ -134,15 +150,23 @@ const stopRecording = async () => {
   emit('recordingStopped')
 }
 
-const removeRecording = recording => {
+const removeRecording = async recording => {
   audioRecordings.value = audioRecordings.value.filter(r => r !== recording)
   console.log(recording.name)
   const storageRef = refStorage(storage, recording.name);
+  console.log("delete")
   ;(async () => {
     await deleteObject(storageRef);
   })();
 
+  // Query for the document that matches the recording name
+  const q = query(collection(db, "Recordings"), where("recordingName", "==", recording.name),where("auth", "==", userId));
+  const querySnapshot = await getDocs(q);
 
+  // Delete all matching documents (there should only be one)
+  for (const doc of querySnapshot.docs) {
+  await deleteDoc(doc.ref);
+}
   navigator.vibrate(10)
   showToast('Recording removed', 'alert-warning')
 }
