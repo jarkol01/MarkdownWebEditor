@@ -3,6 +3,7 @@
   import { useStore } from 'vuex'
   import { doc, getDoc } from "firebase/firestore";
   import { db } from '@/firebase.js'
+  
 
   const store = useStore()
   const title = ref("")

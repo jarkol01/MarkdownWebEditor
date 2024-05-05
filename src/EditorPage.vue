@@ -13,6 +13,8 @@ import AudioRecorder from '@/components/AudioRecorder.vue'
 import ProfileInfo from '@/components/auth/ProfileInfo.vue'
 import AuthDropdown from '@/components/auth/AuthModal.vue'
 
+
+
 // Set default initial content
 const content = ref('# Edit me...')
 
@@ -98,6 +100,7 @@ const recordingStopped = () => isRecording.value = false
 </script>
 
 <template>
+
   <div class="h-svh flex flex-col">
     <div class="navbar bg-base-100">
       <div class="flex-1">
@@ -110,6 +113,7 @@ const recordingStopped = () => isRecording.value = false
           @input="(e) => {updateTitle(e); saveNote()}"
         />
       </div>
+      
       <div class="flex-none gap-2">
         <div class="relative flex h-3 w-3" v-if="isRecording">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-600 opacity-75"></span>
