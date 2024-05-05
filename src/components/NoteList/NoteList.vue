@@ -1,16 +1,17 @@
 <script setup>
-import db from '@/firebase.js'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, query, where, getDocs } from 'firebase/firestore'
 import { computed, onMounted, ref } from 'vue'
-import NoteListItem from '@/components/NoteListItem.vue'
+import NoteListItem from '@/components/NoteList/NoteListItem.vue'
 import { debounce } from 'lodash-es'
+import { auth, db } from '@/firebase.js'
+import AddNote from '@/components/NoteList/AddNote.vue'
 
 const emit = defineEmits(['select-note'])
 
 const notes = ref([])
-
-onMounted(async () => {
-  const querySnapshot = await getDocs(collection(db, 'notes'))
+const fetchNotes = async () => {
+  notes.value = []
+  const querySnapshot = await getDocs(query(collection(db, 'notes'), where('user', '==', auth.currentUser.uid)))
   querySnapshot.forEach((doc) => {
     notes.value.push({
       id: doc.id,
@@ -18,6 +19,15 @@ onMounted(async () => {
       content: doc.data().content
     })
   })
+}
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    fetchNotes()
+  } else {
+    notes.value = []
+
+  }
 })
 
 const searchQuery = ref('')
@@ -31,9 +41,15 @@ const filteredNotes = computed(() => {
 const filterNotes = debounce((e) => {
   searchQuery.value = e.target.value
 }, 50)
+
+const isUserLoggedIn = ref(Boolean(auth.currentUser))
+auth.onAuthStateChanged((newUser) => {
+  isUserLoggedIn.value = Boolean(newUser)
+})
 </script>
 
 <template>
+  <div class="h-full relative">
   <label class="input input-bordered flex items-center gap-2 mx-5">
     <input type="text" class="grow" placeholder="Search" :value="searchQuery" @input="filterNotes" />
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70">
@@ -42,7 +58,9 @@ const filterNotes = debounce((e) => {
             clip-rule="evenodd" />
     </svg>
   </label>
+  <AddNote class="absolute right-5 bottom-5" @select-note="fetchNotes" v-if="isUserLoggedIn"/>
   <ul class="menu flex flex-col gap-2 mt-2">
     <NoteListItem v-for="note in filteredNotes" :key="note.id" :id="note.id" :title="note.title" :search-query @select-note="emit('select-note')" />
   </ul>
+    </div>
 </template>
