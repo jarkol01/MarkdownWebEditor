@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { marked } from 'marked'
 import { debounce } from 'lodash-es'
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import db from '@/firebase.js'
 import { doc, getDoc } from 'firebase/firestore'
 import NoteList from '@/components/NoteList.vue'
 import OCR from './components/OpticalCharacterRecognitionModal.vue'
-
+import AudioRecorder from '@/components/AudioRecorder.vue'
 
 // Set default initial content
 const content = ref('# Edit me...')
@@ -61,6 +61,14 @@ const mobileViewMode = ref<'list' | 'editor' | 'preview'>('list')
 window.addEventListener('resize', () => {
   isMobile.value = window.innerWidth < MOBILE_WINDOW_WIDtH_THRESHOLD
 })
+
+// Provide vibration feedback on mobile devices when switching between views
+watch(mobileViewMode, () => navigator.vibrate(10))
+
+// Background recording state indication
+const isRecording = ref(false)
+const recordingStarted = () => isRecording.value = true
+const recordingStopped = () => isRecording.value = false
 </script>
 
 <template>
@@ -71,6 +79,10 @@ window.addEventListener('resize', () => {
         <input type="text" placeholder="Note title" class="input w-full max-w-xs" :value="title" />
       </div>
       <div class="flex-none gap-2">
+        <div class="relative flex h-3 w-3" v-if="isRecording">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-600 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
+        </div>
         <div class="dropdown dropdown-end">
           <div tabindex="0" role="button" class="btn btn-ghost btn-square">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -82,6 +94,9 @@ window.addEventListener('resize', () => {
           <ul tabindex="0" class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
             <li>
               <button onclick="ocr_modal.showModal()">OCR</button>
+            </li>
+            <li>
+              <button onclick="recorder_modal.showModal()">Recorder</button>
             </li>
             <!-- TODO: Other extra functionalities may be launched from here -->
           </ul>
@@ -144,6 +159,7 @@ window.addEventListener('resize', () => {
     </div>
   </div>
   <OCR />
+  <AudioRecorder @recording-started="recordingStarted" @recording-stopped="recordingStopped" />
 </template>
 
 <style scoped>

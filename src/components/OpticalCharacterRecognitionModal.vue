@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { createWorker } from 'tesseract.js'
+import AlertToast from '@/components/AlertToast.vue'
 
 const ocrState = ref('awaiting-camera-start')
 const cameraViewfinder = ref(null)
@@ -162,10 +163,6 @@ const copyResults = () => {
         </div>
       </div>
     </div>
-    <div class="toast" v-if="toast.message">
-      <div class="alert" :class="`${toast.type}`">
-        <span>{{ toast.message }}</span>
-      </div>
-    </div>
+    <AlertToast :message="toast.message" :type="toast.type" />
   </dialog>
 </template>
