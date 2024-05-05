@@ -90,6 +90,9 @@ window.addEventListener('resize', () => {
   isMobile.value = window.innerWidth < MOBILE_WINDOW_WIDtH_THRESHOLD
 })
 
+// Provide vibration feedback on mobile devices when switching between views
+watch(mobileViewMode, () => navigator.vibrate(10))
+
 // Background recording state indication
 const isRecording = ref(false)
 const recordingStarted = () => isRecording.value = true
