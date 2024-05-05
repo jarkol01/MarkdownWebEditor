@@ -1,10 +1,10 @@
 <script setup>
 import { collection, query, where, getDocs } from 'firebase/firestore'
 import { computed, ref } from 'vue'
-import NoteListItem from '@/components/NoteList/NoteListItem.vue'
+import NoteListItem from '@/components/note-list/NoteListItem.vue'
 import { debounce } from 'lodash-es'
 import { auth, db } from '@/firebase.js'
-import AddNote from '@/components/NoteList/AddNote.vue'
+import AddNote from '@/components/note-list/AddNote.vue'
 
 const emit = defineEmits(['select-note'])
 
