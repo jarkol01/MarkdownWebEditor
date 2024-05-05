@@ -1,13 +1,13 @@
 <script setup>
 import { ref } from 'vue'
 import AlertToast from '@/components/AlertToast.vue'
-import {getStorage,getDownloadURL,ref as refStorage,uploadBytes } from "firebase/storage";
+import {getStorage,getDownloadURL,ref as refStorage,uploadBytes,deleteObject} from "firebase/storage";
 const storage = getStorage();
 const storageReds=[];
 const previous_Urls = [
-  { url: "https://firebasestorage.googleapis.com/v0/b/markdownwebeditor.appspot.com/o/test_1?alt=media&token=55cc01d5-8f86-46ee-97ed-fcd9571fd4dc", name: "Test 1" },
-  { url: "https://firebasestorage.googleapis.com/v0/b/markdownwebeditor.appspot.com/o/test_2?alt=media&token=e67420be-0e01-4a2a-b7d7-29769ccc6691", name: "Test 2" },
-  { url: "https://firebasestorage.googleapis.com/v0/b/markdownwebeditor.appspot.com/o/test_3?alt=media&token=3b3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b", name: "Test 3" }
+ 
+    
+  { url: "https://firebasestorage.googleapis.com/v0/b/markdownwebeditor.appspot.com/o/test_3?alt=media&token=3b3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b", name: "test_3" },
 ]
 const loadRecordings = async () => {
   previous_Urls.forEach((item) => {
@@ -54,13 +54,24 @@ const startRecording = async () => {
       const file = new File([e.data], `${name}_${audioRecordings.value.length + 1}.${mediaRecorder.mimeType.split('/')[1]}`, { type: mediaRecorder.mimeType })
 
       const storageRef = refStorage(storage,name);
-      
-      uploadBytes(storageRef, file);
+      (async () => {
+  await uploadBytes(storageRef, file).then(async () => {
+    const url = await getDownloadURL(storageRef);
+    console.log('Download URL:', url);
+    previous_Urls.push({url: url, name: name })
+    console.log(previous_Urls)
+  })
+})();
+//I love javascript syntax so much
       storageReds.push(storageRef)
+      
  
+
+
       
       
       audioRecordings.value.push({ name: name || DEFAULT_RECORDING_NAME, file, url: URL.createObjectURL(file) })
+      
     }
     mediaRecorder.start()
 
@@ -74,12 +85,14 @@ const startRecording = async () => {
   }
  
 }
-const Download =() =>{
-  storageReds.forEach(async (ref) => {
-    const url = await getDownloadURL(ref);
+const Download = async() =>{
+  let lastElement = storageReds[storageReds.length - 1];
+    
+    const url = await getDownloadURL(lastElement);
     console.log('Download URL:', url);
-  });
-}
+    return url;
+  };
+
 const stopRecording = async () => {
   await mediaRecorder.stop()
   if (currentStream) {
@@ -97,6 +110,13 @@ const stopRecording = async () => {
 
 const removeRecording = recording => {
   audioRecordings.value = audioRecordings.value.filter(r => r !== recording)
+  console.log(recording.name)
+  const storageRef = refStorage(storage, recording.name);
+  ;(async () => {
+    await deleteObject(storageRef);
+  })();
+
+
   navigator.vibrate(10)
   showToast('Recording removed', 'alert-warning')
 }
