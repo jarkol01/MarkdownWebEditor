@@ -9,17 +9,17 @@ const closeModal = () => loginModal.value.close()
 </script>
 <template>
   <button class="btn" onclick="login_modal.showModal()">Log in</button>
-  <dialog id="login_modal" class="modal" ref="loginModal">
+  <dialog id="login_modal" class="modal modal-bottom sm:modal-middle" ref="loginModal">
     <div class="modal-box">
       <p class="text-xl font-bold mb-6 text-center">Log in</p>
       <div class="flex flex-col w-full border-opacity-50">
-        <div class="grid grid-cols-2 gap-6">
+        <div class="grid sm:grid-cols-2 gap-6">
           <SignInWithGoogle />
           <RouterLink
             :to="'/register/'"
             class="btn btn-ghost border-base-content/25 hover:border-base-content"
           >
-            I don't have an account yet
+            Sign up with email
           </RouterLink>
         </div>
         <div class="divider my-6">OR</div>
