@@ -23,7 +23,7 @@ const fetchNotes = async () => {
 
 auth.onAuthStateChanged((user) => {
   if (user) {
-    console.log(auth.currentUser.uid)
+    
     fetchNotes()
   } else {
     notes.value = []
