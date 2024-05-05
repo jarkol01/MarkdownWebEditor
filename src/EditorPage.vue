@@ -9,6 +9,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import NoteList from '@/components/NoteList.vue'
 import OCR from './components/OpticalCharacterRecognitionModal.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
+import FileCreationLocation from './components/FileCreationLocation.vue'
 
 // Set default initial content
 const content = ref('# Edit me...')
@@ -160,6 +161,8 @@ const recordingStopped = () => isRecording.value = false
   </div>
   <OCR />
   <AudioRecorder @recording-started="recordingStarted" @recording-stopped="recordingStopped" />
+  <FileCreationLocation />
+  
 </template>
 
 <style scoped>
