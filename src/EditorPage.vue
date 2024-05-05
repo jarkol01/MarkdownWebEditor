@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { marked } from 'marked'
 import { debounce } from 'lodash-es'
-
 import { auth, db } from '@/firebase.js'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore'
 import NoteList from '@/components/note-list/NoteList.vue'
 import OCR from './components/OpticalCharacterRecognitionModal.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
@@ -31,13 +30,21 @@ const updatePreview = debounce((e) => {
   content.value = e.target.value
 }, 50)
 
+const awaitingTitleUpdate = ref(false)
 const updateTitle = debounce((e) => {
   title.value = e.target.value
-}, 50)
+  notes.value = notes.value.map((note) => {
+    if (note.id === store.getters.selectedNoteId) {
+      note.title = e.target.value
+    }
+    return note
+  })
+  awaitingTitleUpdate.value = false
+}, 3000)
 
 // Get noteId from the route params if present
 const route = useRoute()
-const noteId = route.params.noteId
+let noteId = route.params.noteId
 
 const store = useStore()
 const title = ref('')
@@ -68,6 +75,7 @@ const performSaveNote = async () => {
   }, { merge: true })
   console.log('Note saved!')
 }
+
 const saveNote = debounce(() => {
   console.log(title.value, content.value)
   performSaveNote()
@@ -80,7 +88,10 @@ if (noteId) {
 }
 
 // Watch for changes in the selected note
-watch(() => store.getters.selectedNoteId, fetchNote)
+watch(() => store.getters.selectedNoteId, (selectedNoteId) => {
+  noteId = selectedNoteId
+  fetchNote()
+})
 
 // Check if the page is viewed on a mobile device and adjust the layout accordingly
 const MOBILE_WINDOW_WIDtH_THRESHOLD = 1024
@@ -97,6 +108,23 @@ watch(mobileViewMode, () => navigator.vibrate(10))
 const isRecording = ref(false)
 const recordingStarted = () => isRecording.value = true
 const recordingStopped = () => isRecording.value = false
+
+const fetchingNotes = ref(false)
+const notes = ref([])
+const fetchNotes = async () => {
+  let tmpNotes = []
+  fetchingNotes.value = true
+  const querySnapshot = await getDocs(query(collection(db, 'notes'), where('user', '==', auth.currentUser.uid)))
+  querySnapshot.forEach((doc) => {
+    tmpNotes.push({
+      id: doc.id,
+      title: doc.data().title,
+      content: doc.data().content
+    })
+  })
+  notes.value = tmpNotes
+  fetchingNotes.value = false
+}
 </script>
 
 <template>
@@ -109,8 +137,9 @@ const recordingStopped = () => isRecording.value = false
           type="text"
           placeholder="Note title"
           class="input w-full max-w-xs"
+          :class="{ 'animate-pulse': awaitingTitleUpdate }"
           :value="title"
-          @input="(e) => {updateTitle(e); saveNote()}"
+          @input="(e) => {awaitingTitleUpdate = true; updateTitle(e); saveNote()}"
         />
       </div>
       
@@ -145,7 +174,12 @@ const recordingStopped = () => isRecording.value = false
         class="py-2 col-span-5 lg:col-span-1"
         v-if="!isMobile || mobileViewMode === 'list'"
       >
-        <NoteList @select-note="mobileViewMode = 'editor'" />
+        <NoteList
+          @select-note="mobileViewMode = 'editor'"
+          :selected-note-id="noteId"
+          @fetch-note-request="fetchNotes"
+                  :notes
+        />
       </div>
       <div
         class="grow h-full col-span-5 lg:col-span-4 grid lg:grid-cols-2"

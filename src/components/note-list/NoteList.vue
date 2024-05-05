@@ -1,39 +1,38 @@
 <script setup>
-import { collection, query, where, getDocs } from 'firebase/firestore'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import NoteListItem from '@/components/note-list/NoteListItem.vue'
 import { debounce } from 'lodash-es'
-import { auth, db } from '@/firebase.js'
+import { auth } from '@/firebase.js'
 import AddNote from '@/components/note-list/AddNote.vue'
 
-const emit = defineEmits(['select-note'])
+const props = defineProps({
+  selectedNoteId: String,
+  notes: Array,
+  fetchingNotes: Boolean
+})
 
-const notes = ref([])
-const fetchNotes = async () => {
-  notes.value = []
-  const querySnapshot = await getDocs(query(collection(db, 'notes'), where('user', '==', auth.currentUser.uid)))
-  querySnapshot.forEach((doc) => {
-    notes.value.push({
-      id: doc.id,
-      title: doc.data().title,
-      content: doc.data().content
-    })
-  })
-}
+watch(() => props.notes, (newNotes) => {
+  notesCache.value = newNotes
+})
+
+const emit = defineEmits(['select-note', 'fetch-note-request'])
+
+const processing = ref(false)
+
+const notesCache = ref([])
 
 auth.onAuthStateChanged((user) => {
   if (user) {
-    fetchNotes()
+    emit('fetch-note-request')
   } else {
-    notes.value = []
-
+    notesCache.value = []
   }
 })
 
 const searchQuery = ref('')
 
 const filteredNotes = computed(() => {
-  return notes.value.filter((note) => {
+  return notesCache.value.filter((note) => {
     return note.title.toLowerCase().includes(searchQuery.value.toLowerCase())
   })
 })
@@ -46,6 +45,14 @@ const isUserLoggedIn = ref(Boolean(auth.currentUser))
 auth.onAuthStateChanged((newUser) => {
   isUserLoggedIn.value = Boolean(newUser)
 })
+
+const refreshNoteList = () => {
+  emit('fetch-note-request')
+}
+
+const fetchNotes = () => {
+  emit('fetch-note-request')
+}
 </script>
 
 <template>
@@ -58,9 +65,19 @@ auth.onAuthStateChanged((newUser) => {
               clip-rule="evenodd" />
       </svg>
     </label>
-    <AddNote class="absolute right-5 bottom-5" @select-note="fetchNotes" v-if="isUserLoggedIn"/>
+    <AddNote class="absolute right-5 bottom-5" @select-note="fetchNotes" v-if="isUserLoggedIn"
+             @creating="processing = true" />
     <ul class="menu flex flex-col gap-2 mt-2" v-if="auth.currentUser">
-      <NoteListItem v-for="note in filteredNotes" :key="note.id" :id="note.id" :title="note.title" :search-query @select-note="emit('select-note')" />
+      <NoteListItem
+        v-for="note in filteredNotes"
+        :key="note.id"
+        :id="note.id"
+        :title="note.title"
+        :search-query
+        :is-selected="note.id === props.selectedNoteId"
+        @select-note="emit('select-note')"
+        @note-removed="refreshNoteList"
+        />
     </ul>
     <p class="m-5 text-sm text-slate-500 text-center" v-else>Please log in to see your notes...</p>
   </div>
