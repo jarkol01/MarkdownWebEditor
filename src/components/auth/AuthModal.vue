@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SignInWithEmail from '@/components/auth/SignInWithEmail.vue'
 import SignInWithGoogle from '@/components/auth/SignInWithGoogle.vue'
+import SignInWithFacebook from '@/components/auth/SigninWithFacebook.vue'
 import { ref } from 'vue'
 
 const loginModal = ref(null)
@@ -15,6 +16,7 @@ const closeModal = () => loginModal.value.close()
       <div class="flex flex-col w-full border-opacity-50">
         <div class="grid sm:grid-cols-2 gap-6">
           <SignInWithGoogle />
+          <SignInWithFacebook />
           <RouterLink
             :to="'/register/'"
             class="btn btn-ghost border-base-content/25 hover:border-base-content"
